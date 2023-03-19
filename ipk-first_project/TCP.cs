@@ -26,17 +26,6 @@ public class Tcp
 
     public void ListenTcp()
     {
-        /*AsyncListen();
-        async Task AsyncListen()
-        {
-            var data = new byte[256];
-            Debug.Assert(_stream != null, nameof(_stream) + " != null");
-            var bytes = _stream.ReadAsync(data, 0, data.Length);
-            AsyncListen();
-            var responseData = Encoding.ASCII.GetString(data, 0, bytes);
-            Console.WriteLine("Received: {0}", responseData);
-        }*/
-
         Debug.Assert(_stream != null, nameof(_stream) + " != null");
         _=_stream.BeginRead(_state.Buffer, 0, BufSize, _recv = ar =>
         {

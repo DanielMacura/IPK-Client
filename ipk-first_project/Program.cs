@@ -13,7 +13,7 @@ internal class MyClass
         Console.CancelKeyPress += CancelKeyPressHandler;
 
         var showHelp = false;
-        var host = "172.19.173.188";
+        var host = "172.19.173.188";    //172.19.173.188
         var mode = "tcp";
         var port = 4747;
 
@@ -55,41 +55,11 @@ internal class MyClass
             Console.Error.WriteLine("Try `greet --help' for more information.");
         }
 
-        switch (mode)
+        var handler = new NetworkHandler(mode);
+        handler.Start(host, port);
+        while (true)
         {
-            case "tcp":
-            {
-                var t = new Tcp();
-                t.Stream(host,port);
-
-                //using TcpClient client = new TcpClient(host, port);
-                //NetworkStream stream = client.GetStream();
-
-                //SendTcp(stream, "HELLO"+LF);
-                //ListenTcp(stream);
-                while (true)
-                {
-                    t.SendTcp(Console.ReadLine()+Lf);
-                    t.ListenTcp();
-                    //SendTcp(stream, Console.ReadLine()+LF);
-                    //ListenTcp(stream);
-                    
-                }
-            }
-            case "udp":
-            {
-                var s = new UdpSocket();
-                s.Server(IPAddress.Loopback.ToString(), 4747);
-
-                var c = new UdpSocket();
-                c.Client(host, port);       //                      172.25.102.207
-                c.Send("(+ 1 2)");
-
-                while (true)
-                {
-                    c.Send(Console.ReadLine() ?? string.Empty);
-                }
-            }
+            handler.SendMessage(Console.ReadLine() ?? String.Empty);
         }
 
     }
