@@ -1,4 +1,5 @@
-﻿using Mono.Options;
+﻿using System.Net;
+using Mono.Options;
 
 namespace ipk_first_project;
 
@@ -78,10 +79,10 @@ internal class MyClass
             case "udp":
             {
                 var s = new UdpSocket();
-                s.Server("172.19.160.1", 4747);
+                s.Server(IPAddress.Loopback.ToString(), 4747);
 
                 var c = new UdpSocket();
-                c.Client("172.19.173.188", 4747);       //                      172.25.102.207
+                c.Client(host, port);       //                      172.25.102.207
                 c.Send("(+ 1 2)");
 
                 while (true)

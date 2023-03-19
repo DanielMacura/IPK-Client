@@ -30,7 +30,9 @@ public class UdpSocket
 
     public void Client(string address, int port)
     {
-        _socket.Connect(IPAddress.Parse(address), port);
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(address);
+        IPAddress ipAddress = ipHostInfo.AddressList[0].MapToIPv4();
+        _socket.Connect(ipAddress, port);
         Receive();
     }
 
