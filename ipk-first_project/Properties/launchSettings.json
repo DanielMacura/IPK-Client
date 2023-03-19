@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "TCP": {
+      "commandName": "Project",
+      "commandLineArgs": "-m tcp"
+    },
+    "UDP": {
+      "commandName": "Project",
+      "commandLineArgs": "-m udp"
+    }
+  }
+}
