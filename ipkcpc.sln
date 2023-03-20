@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ipk-first_project", "ipk-first_project\ipk-first_project.csproj", "{716BF44D-A578-4107-9A07-52FF5CF273A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ipkcpc", "ipk-first_project\ipkcpc.csproj", "{716BF44D-A578-4107-9A07-52FF5CF273A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

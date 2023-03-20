@@ -6,20 +6,15 @@ using System.Text;
 //Sauce
 //https://gist.github.com/darkguy2008/413a6fea3a5b4e67e5e0d96f750088a9
 
-namespace ipk_first_project;
+namespace ipkcpc;
 
 public class UdpSocket
 {
-    private readonly Socket _socket = new (AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
     private const int BufSize = 8 * 1024;
-    private readonly State _state = new ();
+    private readonly Socket _socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    private readonly State _state = new();
     private EndPoint _epFrom = new IPEndPoint(IPAddress.Any, 0);
     private AsyncCallback? _recv;
-
-    public class State
-    {
-        public byte[] Buffer = new byte[BufSize];
-    }
 
     public void Server(string address, int port)
     {
@@ -30,8 +25,8 @@ public class UdpSocket
 
     public void Client(string address, int port)
     {
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(address);
-        IPAddress ipAddress = ipHostInfo.AddressList[0].MapToIPv4();
+        var ipHostInfo = Dns.GetHostEntry(address);
+        var ipAddress = ipHostInfo.AddressList[0].MapToIPv4();
         _socket.Connect(ipAddress, port);
         Receive();
     }
@@ -51,10 +46,7 @@ public class UdpSocket
 
         Console.WriteLine(BitConverter.ToString(fullData));
 
-        foreach (var t in fullData)
-        {
-            Console.WriteLine(Convert.ToString(t, 2).PadLeft(8, '0'));
-        }
+        foreach (var t in fullData) Console.WriteLine(Convert.ToString(t, 2).PadLeft(8, '0'));
 
         _socket.BeginSend(fullData, 0, fullData.Length, SocketFlags.None, ar =>
         {
@@ -73,10 +65,7 @@ public class UdpSocket
             var bytes = _socket.EndReceiveFrom(ar, ref _epFrom);
             Debug.Assert(so != null, nameof(so) + " != null");
             _socket.BeginReceiveFrom(so.Buffer, 0, BufSize, SocketFlags.None, ref _epFrom, _recv, so);
-            for (var i = 0; i < bytes; i++)
-            {
-                Console.WriteLine(Convert.ToString(so.Buffer[i], 2).PadLeft(8, '0'));
-            }
+            for (var i = 0; i < bytes; i++) Console.WriteLine(Convert.ToString(so.Buffer[i], 2).PadLeft(8, '0'));
             // ReSharper disable once UnusedVariable
             int opcode = so.Buffer[0];
             // ReSharper disable once UnusedVariable
@@ -84,7 +73,13 @@ public class UdpSocket
             // ReSharper disable once UnusedVariable
             int payloadLength = so.Buffer[2];
             var message = Encoding.ASCII.GetString(so.Buffer, 3, bytes - 3);
-            Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message/*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
+            Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes,
+                message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
         }, _state);
+    }
+
+    public class State
+    {
+        public byte[] Buffer = new byte[BufSize];
     }
 }
