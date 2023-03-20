@@ -6,8 +6,8 @@ namespace ipkcpc;
 public class NetworkHandler
 {
     private readonly string _mode;
-    private UdpSocket? _c;
-    private Tcp? _t;
+    private UdpSocket? _clientUdpSocket;
+    private Tcp? _clientTcp;
 
     public NetworkHandler(string mode)
     {
@@ -20,9 +20,9 @@ public class NetworkHandler
         {
             case "tcp":
             {
-                _t = new Tcp();
-                _t.Stream(host, port);
-                _t.ListenTcp();
+                _clientTcp = new Tcp();
+                _clientTcp.Stream(host, port);
+                _clientTcp.ListenTcp();
                 break;
             }
 
@@ -31,8 +31,8 @@ public class NetworkHandler
                 var s = new UdpSocket();
                 s.Server(IPAddress.Loopback.ToString(), port);
 
-                _c = new UdpSocket();
-                _c.Client(host, port);
+                _clientUdpSocket = new UdpSocket();
+                _clientUdpSocket.Client(host, port);
                 break;
             }
         }
@@ -44,15 +44,15 @@ public class NetworkHandler
         {
             case "tcp":
             {
-                Debug.Assert(_t != null, nameof(_t) + " != null");
-                _t.SendTcp(message);
+                Debug.Assert(_clientTcp != null, nameof(_clientTcp) + " != null");
+                _clientTcp.SendTcp(message);
                 break;
             }
 
             case "udp":
             {
-                Debug.Assert(_c != null, nameof(_c) + " != null");
-                _c.Send(message);
+                Debug.Assert(_clientUdpSocket != null, nameof(_clientUdpSocket) + " != null");
+                _clientUdpSocket.Send(message);
                 break;
             }
         }

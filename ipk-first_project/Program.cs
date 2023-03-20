@@ -6,15 +6,15 @@ internal class Program
 {
     private static string? _mode;
     private static NetworkHandler? _handler;
-
+    public static readonly System.Threading.EventWaitHandle waitHandle = new System.Threading.AutoResetEvent(false);
     public static void Main(string[] args)
     {
-        Console.CancelKeyPress += CancelKeyPressHandler;
+        Console.CancelKeyPress += CancelKeyPressHandler;                //          TODO            will work when recieve SIGN INT??
 
         var showHelp = false;
-        var host = "172.19.173.188"; //172.19.173.188
+        var host = "merlin.fit.vutbr.cz"; //172.19.173.188
         _mode = "tcp";
-        var port = 4747;
+        var port = 10002;
 
         var p = new OptionSet
         {
@@ -71,7 +71,13 @@ internal class Program
     {
         Console.WriteLine("Ctrl+C pressed. Exiting...");
         if (_mode is "tcp") _handler?.SendMessage("BYE");
-        Environment.Exit(0);
+        else
+        {
+            Console.WriteLine("Exiting main");
+            Environment.Exit(0);
+        }
+        waitHandle.WaitOne();
+        waitHandle.Reset();
     }
 
 

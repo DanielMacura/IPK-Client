@@ -29,29 +29,33 @@ public class Tcp
             Debug.Assert(ar.AsyncState != null, "ar.AsyncState != null");
             var so = ar.AsyncState as State;
             var bytes = _stream.EndRead(ar);
-            //var bytes = _socket.EndReceiveFrom(ar, ref _epFrom);
             Debug.Assert(so != null, nameof(so) + " != null");
 
-            if (ClientInitiatedExit == false) _stream.BeginRead(_state.Buffer, 0, BufSize, _recv, so);
 
-            for (var i = 0; i < bytes; i++) Console.WriteLine(Convert.ToString(so.Buffer[i], 2).PadLeft(8, '0'));
             var message = Encoding.ASCII.GetString(so.Buffer, 0, bytes);
 
-            Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes,
-                message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
-            if (message.Trim() is not "BYE") return;
-            Console.WriteLine("Got BYE");
-            if (ClientInitiatedExit)
-            {
-                Environment.Exit(0);
-            }
-            else
-            {
-                SendTcp("BYE");
-                Environment.Exit(0);
-            }
-        }, _state);
+            Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
 
+            if (message.Trim() is "BYE")
+            {
+                Console.WriteLine("Got BYE");
+                if (ClientInitiatedExit)
+                {
+                    Console.WriteLine("Exiting forom tcp");
+                    ClientInitiatedExit = true;
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Exiting forom tcp");
+                    SendTcp("BYE");
+                    ClientInitiatedExit = true;
+
+                    Environment.Exit(0);
+                }
+            }
+            if (ClientInitiatedExit == false) _stream.BeginRead(_state.Buffer, 0, BufSize, _recv, so);
+        }, _state);
 
         /*
         var data = new byte[256];
@@ -73,6 +77,7 @@ public class Tcp
         try
         {
             if (message.Trim() is "BYE") ClientInitiatedExit = true;
+            Console.WriteLine("Client initated exit");
             var data = Encoding.ASCII.GetBytes(message + Lf);
 
             // SendTcp the message to the connected TcpServer.
