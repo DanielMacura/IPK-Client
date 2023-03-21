@@ -34,8 +34,8 @@ public class Tcp
 
             var message = Encoding.ASCII.GetString(so.Buffer, 0, bytes);
 
-            Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
-
+            //Debug.Write("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message );
+            Console.WriteLine(message);
             if (message.Trim() is "BYE")
             {
                 Console.WriteLine("Got BYE");

@@ -6,11 +6,11 @@
     },
     "TCP": {
       "commandName": "Project",
-      "commandLineArgs": "-m tcp"
+      "commandLineArgs": "-m tcp -h merlin.fit.vutbr.cz -p 10002"
     },
     "UDP": {
       "commandName": "Project",
-      "commandLineArgs": "-m udp"
+      "commandLineArgs": "-m udp -h merlin.fit.vutbr.cz -p 10002"
     }
   }
 }

@@ -71,13 +71,14 @@ public class UdpSocket
             // ReSharper disable once UnusedVariable
             int payloadLength = so.Buffer[2];
             var message = Encoding.ASCII.GetString(so.Buffer, 3, bytes - 3);
-            if (statusCode is 0)
+            switch (statusCode)
             {
-                Console.WriteLine("OK:{0}", message);
-            }
-            else if (statusCode is 1)
-            {
-                Console.WriteLine("ERROR:{0}", message);
+                case 0:
+                    Console.WriteLine("OK:{0}", message);
+                    break;
+                case 1:
+                    Console.WriteLine("ERROR:{0}", message);
+                    break;
             }
             //Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
         }, _state);

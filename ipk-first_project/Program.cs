@@ -1,4 +1,5 @@
-﻿using Mono.Options;
+﻿using System.Diagnostics;
+using Mono.Options;
 
 namespace ipkcpc;
 
@@ -6,28 +7,28 @@ internal class Program
 {
     private static string? _mode;
     private static NetworkHandler? _handler;
-    public static readonly System.Threading.EventWaitHandle waitHandle = new System.Threading.AutoResetEvent(false);
+    public static readonly EventWaitHandle WaitHandle = new AutoResetEvent(false);
     public static void Main(string[] args)
     {
         Console.CancelKeyPress += CancelKeyPressHandler;                //          TODO            will work when recieve SIGN INT??
 
         var showHelp = false;
-        var host = "merlin.fit.vutbr.cz"; //172.19.173.188
-        _mode = "tcp";
-        var port = 10002;
+        var host = ""; //172.19.173.188
+        _mode = "";
+        var port = -1;
 
         var p = new OptionSet
         {
             {
-                "h|host=", "IP address of AaaS provider.",
+                "h=|host=", "IP address of AaaS provider.",
                 v => host = v
             },
             {
-                "p|port=", "port of connection",
+                "p=|port=", "port of connection",
                 (int v) => port = v
             },
             {
-                "m|mode=", "connection mode.",
+                "m=|mode=", "connection mode.",
                 v => _mode = v
             },
             {
@@ -54,30 +55,51 @@ internal class Program
             return;
         }
 
-        Console.WriteLine("In mode: " + _mode);
-
+        Debug.WriteLine("In mode: " + _mode);
+        var incompleteArguments = false;
+        if (host is "")
+        {
+            Console.Error.WriteLine("Host address not specified.");
+            incompleteArguments = true;
+        }
+        if (port is -1)
+        {
+            Console.Error.WriteLine("Port not specified.");
+            incompleteArguments = true;
+        }
         if (_mode is not ("tcp" or "udp"))
         {
-            Console.Error.WriteLine("Connection mode missing.");
+            Console.Error.WriteLine("Connection mode not specified.");
+            incompleteArguments = true;
+        }
+
+        if (incompleteArguments)
+        {
             Console.Error.WriteLine("Try `ipkcpc --help' for more information.");
+            Environment.Exit(1);
         }
 
         _handler = new NetworkHandler(_mode);
         _handler.Start(host, port);
-        while (true) _handler.SendMessage(Console.ReadLine() ?? string.Empty);
+        while (true)
+        {
+            // TODO add EOF check
+            var input =  Console.ReadLine();
+            if (input != null) _handler.SendMessage(input);
+        }
     }
 
     protected static void CancelKeyPressHandler(object? sender, ConsoleCancelEventArgs args)
     {
-        Console.WriteLine("Ctrl+C pressed. Exiting...");
+        Debug.WriteLine("Ctrl+C pressed. Exiting...");
         if (_mode is "tcp") _handler?.SendMessage("BYE");
         else
         {
-            Console.WriteLine("Exiting main");
+            Debug.WriteLine("Exiting main");
             Environment.Exit(0);
         }
-        waitHandle.WaitOne();
-        waitHandle.Reset();
+        WaitHandle.WaitOne();
+        WaitHandle.Reset();
     }
 
 
