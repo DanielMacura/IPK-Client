@@ -11,6 +11,10 @@
     "UDP": {
       "commandName": "Project",
       "commandLineArgs": "-m udp -h merlin.fit.vutbr.cz -p 10002"
+    },
+    "help": {
+      "commandName": "Project",
+      "commandLineArgs": "-i"
     }
   }
 }

@@ -33,6 +33,11 @@ public class UdpSocket
 
     public void Send(string text)
     {
+        if (text.Length > 255)
+        {
+            Console.Error.Write("ERROR: Message over 255 bytes.");
+            return;
+        }
         var data = Encoding.ASCII.GetBytes(text);
         var bytes = new byte[data.Length + 2];
 

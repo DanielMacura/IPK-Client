@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
 
 namespace ipkcpc;

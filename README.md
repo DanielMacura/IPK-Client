@@ -3,24 +3,28 @@
   A simple client for the IPK Calculator Protocol.
 
 - [IPK - first project](#ipk---first-project)
-  - [Executive summary of used protocols](#executive-summary-of-used-protocols)
-    - [TCP](#tcp)
-    - [UDP](#udp)
-  - [Implementation](#implementation)
-    - [Network Handler Class](#network-handler-class)
-    - [TCP communication](#tcp-communication)
-      - [TCP Class](#tcp-class)
-      - [UDP Class](#udp-class)
+	- [Executive summary of used protocols](#executive-summary-of-used-protocols)
+	- [Implementation](#implementation)
+		- [Network Handler Class](#network-handler-class)
+		- [TCP communication](#tcp-communication)
+			- [TCP Class](#tcp-class)
+		- [UDP Class](#udp-class)
+	- [Tests](#tests)
+		- [TCP Tests](#tcp-tests)
+		- [UDP Tests](#udp-tests)
+	- [Extra features](#extra-features)
+	- [References](#references)
+
 
 ## Executive summary of used protocols
 
-### TCP
+- ### TCP
 
-Transmission Control Protocol is a transport protocol that is used on top of IP (Internet Protocol) to ensure reliable transmission of packets over the internet or other networks. TCP is a connection-oriented protocol, which means that it establishes and maintains a connection between the two parties until the data transfer is complete. TCP provides mechanisms to solve problems that arise from packet-based messaging, e.g. lost packets or out-of-order packets, duplicate packets, and corrupted packets. TCP achieves this by using sequence and acknowledgement numbers, checksums, flow control, error control, and congestion control.
+  Transmission Control Protocol is a transport protocol that is used on top of IP (Internet Protocol) to ensure reliable transmission of packets over the internet or other networks. TCP is a connection-oriented protocol, which means that it establishes and maintains a connection between the two parties until the data transfer is complete. TCP provides mechanisms to solve problems that arise from packet-based messaging, e.g. lost packets or out-of-order packets, duplicate packets, and corrupted packets. TCP achieves this by using sequence and acknowledgement numbers, checksums, flow control, error control, and congestion control.
 
-### UDP
+- ### UDP
 
-User Datagram Protocol is a connectionless and unreliable protocol that provides a simple and efficient way to send and receive datagrams over an IP network. UDP does not guarantee delivery, order, or integrity of the data, but it minimizes the overhead and latency involved in transmitting data when compared to TCP. UDP is suitable for applications that require speed, simplicity, or real-time communication, such as streaming media, online gaming, voice over IP, or DNS queries.
+  User Datagram Protocol is a connectionless and unreliable protocol that provides a simple and efficient way to send and receive datagrams over an IP network. UDP does not guarantee delivery, order, or integrity of the data, but it minimizes the overhead and latency involved in transmitting data when compared to TCP. UDP is suitable for applications that require speed, simplicity, or real-time communication, such as streaming media, online gaming, voice over IP, or DNS queries.
 
 ## Implementation
 
@@ -188,3 +192,127 @@ This class was adapted from darkguy2008's [gist](https://gist.github.com/darkguy
         */
     }, _state);
     ```
+
+## Tests
+
+### TCP Tests
+
+Input marked in code tags. Server response in plain text.
+
+- Simple handshake
+
+  1. `HELLO`
+  2. HELLO
+
+- Incorect handshake - case sensitive
+
+  1. `ello`
+  2. BYE
+
+- Simple exchange
+
+  1. `HELLO`
+  2. HELLO
+  3. `SOLVE (+ 1 2)`
+  4. 3
+  5. `BYE`
+  6. BYE
+
+- Multiple exchanges
+
+  1. `HELLO`
+  2. HELLO
+  3. `SOLVE (+ 1 2)`
+  4. 3
+  5. `SOLVE (* 1 2 3 4 5)`
+  6. 120
+  7. `SOLVE (- 2 2)`
+  8. 0
+  9. `BYE`
+  10. BYE
+
+- Incorrect exhange - 1
+
+  1. `HELLO`
+  1. HELLO
+  2. `SOLVE (1 2)`
+  3. BYE
+
+- Incorrect exhange - 2
+
+  1. `HELLO`
+  1. HELLO
+  2. `SOLVE (+)`
+  3. BYE
+
+- SIGN INT
+
+  1. `HELLO`
+  2. HELLO
+  3. `SOLVE (+ 1 2)`
+  4. 3
+  5. `Ctrl + C`
+  6. BYE
+
+### UDP Tests
+
+Input marked in code tags. Server response in plain text.
+
+- Simple exchange
+
+  1. `(+ 1 1 1 1)`
+  2. OK:4
+
+- Multiple exchanges
+
+  1. `(+ 1 1 1 1)`
+  2. OK:4
+  3. `(* 1 1 1 1)`
+  4. OK:1
+  5. `(/ 10 2)`
+  6. OK:5
+
+- Incorrect exhange
+
+  1. `(+)`
+  2. ERR:Could not parse the message
+  3. `(1 2)`
+  4. ERR:Could not parse the message
+  5. `()`
+  6. ERR:Could not parse the message
+
+- Message too long
+
+  1. `(+ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)`
+  2. ERROR: Message over 255 bytes.
+  3. `(+ 1 1)`
+  4. OK:2
+
+## Extra features
+
+- The software has been updated with a new command line flag, `--help`, which can be used to display the help information. This flag can be invoked by executing the command `./ipkcpc --help` or `./ipkcpc -i`.
+
+		Usage: ipkcpc [OPTIONS]
+		Ipkcp is a client facilitating connection to a host conforming to the IPK Calculator Protocol.
+
+		Options:
+		-h, --host=VALUE           IP address of AaaS provider.
+		-p, --port=VALUE           port of connection
+		-m, --mode=VALUE           connection mode.
+		-i, --help                 show this message and exit
+
+- Additionally, the command line argument order is arbitrary. Users can now pass the flags in any order they prefer when executing the software. For instance, the command `./ipkcpc -m UDP -p 2023 -H localhost` is a valid input and will be processed correctly by the software.
+
+## References
+
+Microsoft, 2023, *UdpClient Class*, accessed 21 March 2023, <https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.udpclient?view=net-7.0>
+
+Microsoft, 2023, *TcpClient Class*, accessed 21 March 2023, <https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.tcpclient?view=net-7.0>
+
+Wojtek Lukaszuk, 2023, *Clean code*, accessed 21 March 2023, <https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29>
+
+Alemar, 2023, *UDPSocket.cs*, accessed 21 March 2023, <https://gist.github.com/darkguy2008/413a6fea3a5b4e67e5e0d96f750088a9>
+
+Wikipedia, 2023, *User Datagram Protocol*, accessed 21 March 2023, <https://en.wikipedia.org/wiki/User_Datagram_Protocol>
+
+Wikipedia, 2023, *Transmission Control Protocol*, accessed 21 March 2023, <https://en.wikipedia.org/wiki/Transmission_Control_Protocol>
