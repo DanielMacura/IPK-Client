@@ -16,5 +16,6 @@ The program will terminate with a status code of either 0 (SUCCESS) or 1 (ERROR)
 
 - [ ] Checking for EOF to exit program flow.
 - [ ] Write documentation for more tests.
+- [ ] On Nix, when parsing a non numerical address, an exception is thrown.
 - [ ] ...
 - [ ] Sleep... but it was fun.
