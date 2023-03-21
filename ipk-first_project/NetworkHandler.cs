@@ -25,7 +25,6 @@ public class NetworkHandler
                 _clientTcp.ListenTcp();
                 break;
             }
-
             case "udp":
             {
                 var s = new UdpSocket();
@@ -44,15 +43,13 @@ public class NetworkHandler
         {
             case "tcp":
             {
-                Debug.Assert(_clientTcp != null, nameof(_clientTcp) + " != null");
-                _clientTcp.SendTcp(message);
+                _clientTcp?.SendTcp(message);
                 break;
             }
 
             case "udp":
             {
-                Debug.Assert(_clientUdpSocket != null, nameof(_clientUdpSocket) + " != null");
-                _clientUdpSocket.Send(message);
+                _clientUdpSocket?.Send(message);
                 break;
             }
         }

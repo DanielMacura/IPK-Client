@@ -10,10 +10,10 @@ internal class Program
     public static readonly EventWaitHandle WaitHandle = new AutoResetEvent(false);
     public static void Main(string[] args)
     {
-        Console.CancelKeyPress += CancelKeyPressHandler;                //          TODO            will work when recieve SIGN INT??
+        Console.CancelKeyPress += CancelKeyPressHandler;
 
         var showHelp = false;
-        var host = ""; //172.19.173.188
+        var host = "";
         _mode = "";
         var port = -1;
 
@@ -91,11 +91,9 @@ internal class Program
 
     protected static void CancelKeyPressHandler(object? sender, ConsoleCancelEventArgs args)
     {
-        Debug.WriteLine("Ctrl+C pressed. Exiting...");
         if (_mode is "tcp") _handler?.SendMessage("BYE");
         else
         {
-            Debug.WriteLine("Exiting main");
             Environment.Exit(0);
         }
         WaitHandle.WaitOne();

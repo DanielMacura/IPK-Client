@@ -1,9 +1,8 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-//Sauce
+//Source
 //https://gist.github.com/darkguy2008/413a6fea3a5b4e67e5e0d96f750088a9
 //
 
@@ -35,52 +34,48 @@ public class UdpSocket
     public void Send(string text)
     {
         var data = Encoding.ASCII.GetBytes(text);
-        var fullData = new byte[data.Length + 2];
+        var bytes = new byte[data.Length + 2];
 
-        fullData[0] = 0;
-        fullData[1] = (byte)data.Length;
-        data.CopyTo(fullData, 2);
+        bytes[0] = 0;
+        bytes[1] = (byte)data.Length;
+        data.CopyTo(bytes, 2);
 
-
-        //Console.WriteLine(BitConverter.ToString(fullData));
-
-        //foreach (var t in fullData) Console.WriteLine(Convert.ToString(t, 2).PadLeft(8, '0'));
-
-        _socket.BeginSend(fullData, 0, fullData.Length, SocketFlags.None, ar =>
+        _socket.BeginSend(bytes, 0, bytes.Length, SocketFlags.None, ar =>
         {
-            //State? so = ar.AsyncState as State;
-            var bytes = _socket.EndSend(ar);
-            //Console.WriteLine("SEND: {0}, {1}", bytes, text);
+            _ = _socket.EndSend(ar);
         }, _state);
     }
 
     private void Receive()
     {
-        _socket.BeginReceiveFrom(_state.Buffer, 0, BufSize, SocketFlags.None, ref _epFrom, _recv = ar =>
+        _=_socket.BeginReceiveFrom(_state.Buffer, 0, BufSize, SocketFlags.None, ref _epFrom, _recv = ar =>
         {
-            Debug.Assert(ar.AsyncState != null, "ar.AsyncState != null");
             var so = ar.AsyncState as State;
             var bytes = _socket.EndReceiveFrom(ar, ref _epFrom);
-            Debug.Assert(so != null, nameof(so) + " != null");
+
+            if (so == null) return;
             _socket.BeginReceiveFrom(so.Buffer, 0, BufSize, SocketFlags.None, ref _epFrom, _recv, so);
-            //for (var i = 0; i < bytes; i++) Console.WriteLine(Convert.ToString(so.Buffer[i], 2).PadLeft(8, '0'));
-            // ReSharper disable once UnusedVariable
             int opcode = so.Buffer[0];
-            // ReSharper disable once UnusedVariable
             int statusCode = so.Buffer[1];
-            // ReSharper disable once UnusedVariable
             int payloadLength = so.Buffer[2];
             var message = Encoding.ASCII.GetString(so.Buffer, 3, bytes - 3);
-            switch (statusCode)
+            var truncatedToNLength = new string(message.Take(payloadLength).ToArray());
+            if (opcode is 1)
             {
-                case 0:
-                    Console.WriteLine("OK:{0}", message);
-                    break;
-                case 1:
-                    Console.WriteLine("ERROR:{0}", message);
-                    break;
+                switch (statusCode)
+                {
+                    case 0:
+                        Console.WriteLine("OK:{0}", truncatedToNLength);
+                        break;
+                    case 1:
+                        Console.WriteLine("ERROR:{0}", truncatedToNLength);
+                        break;
+                }
             }
-            //Console.WriteLine("RECV: {0}: {1}, |{2}|", _epFrom, bytes, message /*Encoding.ASCII.GetString(so.buffer, 0, bytes)*/);
+            else
+            {
+                Console.Error.WriteLine("Incorrect UPD packet received. Opcode is not 1 - receive.");
+            }
         }, _state);
     }
 
