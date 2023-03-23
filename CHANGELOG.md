@@ -17,5 +17,7 @@ The program will terminate with a status code of either 0 (SUCCESS) or 1 (ERROR)
 - [ ] Checking for EOF to exit program flow.
 - [ ] Write documentation for more tests.
 - [ ] On Nix, when parsing a non numerical address, an exception is thrown.
+- [x] 23/3/23 Fix UDP and TCP trying to unnecessarily resolve ip address using DNS.
+- [x] 23/3/23 Fix not trimming newline character from incoming TCP messages.
 - [ ] ...
 - [ ] Sleep... but it was fun.
