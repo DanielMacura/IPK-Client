@@ -26,8 +26,8 @@ public class NetworkHandler
             }
             case "udp":
             {
-                var s = new UdpSocket();
-                s.Server(IPAddress.Loopback.ToString(), port);
+                //var s = new UdpSocket();
+                //s.Server(host, port);
 
                 _clientUdpSocket = new UdpSocket();
                 _clientUdpSocket.Client(host, port);
