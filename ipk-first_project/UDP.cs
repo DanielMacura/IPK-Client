@@ -25,8 +25,9 @@ public class UdpSocket
 
     public void Client(string address, int port)
     {
-        var ipHostInfo = Dns.GetHostEntry(address);
-        var ipAddress = ipHostInfo.AddressList[0].MapToIPv4();
+        var ipAddress = IPAddress.TryParse(address, out _)
+            ? IPAddress.Parse(address)
+            : Dns.GetHostEntry(address).AddressList[0].MapToIPv4();
         _socket.Connect(ipAddress, port);
         Receive();
     }
