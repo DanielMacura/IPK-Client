@@ -33,7 +33,7 @@ public class Tcp
             if (so == null) return;
             var message = Encoding.ASCII.GetString(so.Buffer, 0, bytes);
 
-            Console.WriteLine(message);
+            Console.WriteLine(message.Trim());
             if (message.Trim() is "BYE")
             {
                 if (ClientInitiatedExit)
